@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 typedef uint16_t U16;
+// main move generator 
 
 int main()
 {
