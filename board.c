@@ -43,9 +43,12 @@ struct Board InitPosition(char* FEN_str) {
 }
 
 /*
-U16* EncodeMoveList(U64 location, U64 moves) {
-	
+int* EncodeMoveList(U64 location, U64 moves) {
+	mmov
 }
+
+
+
 
 
 
