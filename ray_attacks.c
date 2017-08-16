@@ -5,9 +5,8 @@ U64 ReverseBits (U64 num);
 
 //U64 GenerateRayAttacks(int rank, int file, U64 all_pieces, U64 piece)
 U64 GenerateRayAttacks(U64 rank_mask, U64 file_mask, U64 all_pieces, U64 piece) 
-// U64 GenerateRayAttacks()
 {	
-
+	
 	U64 EastAttack(U64 piece, U64 occupied, U64 mask);
 	U64 NorthAttack(U64 piece, U64 occupied, U64 mask); 
 	U64 SouthAttack(U64 piece, U64 occupied, U64 mask); 

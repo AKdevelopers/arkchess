@@ -20,7 +20,7 @@ int main()
 	U64 QueenMoves(U64 queen_loc, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank, U64 *mask_antidiagonal, U64 *mask_diagonal) ;
 	U64 white_king_moves, white_knight_moves, black_pawn_moves, white_rook_moves, white_bishop_moves, white_queen_moves;
 	
-	char FEN_str[] = "rnbqkbnr/pppp1ppp/8/4p3/3N1N2/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2";
+	char FEN_str[] = "rnbqkbnr/pppppppp/8/8/8/7R/PPPPPPPP/1NBQKBN1 w KQkq - 0 1";
 	struct Board StartingBoard;
 
 	StartingBoard = InitPosition(FEN_str);
@@ -31,10 +31,11 @@ int main()
 	white_rook_moves = RookMoves(StartingBoard.white_rooks, StartingBoard.all_white_pieces, StartingBoard.all_pieces, MaskFile, MaskRank);
 	white_bishop_moves = BishopMoves(StartingBoard.white_bishops, StartingBoard.all_white_pieces, StartingBoard.all_pieces, AntiDiagonalMasks, DiagonalMasks);
 	white_queen_moves = QueenMoves(StartingBoard.white_queen, StartingBoard.all_white_pieces, StartingBoard.all_pieces, MaskFile, MaskRank, AntiDiagonalMasks, DiagonalMasks);
-	printf ("Knight moves: %llu\n", black_pawn_moves);
+	printf ("Knight moves: %llu\n", white_rook_moves);
 	return 0;
 }
 
+// initializes the position by parsing the given FEN string and returning bitboards
 struct Board InitPosition(char* FEN_str) {
 	struct Board state;
 	state = ParseFEN(FEN_str);	
@@ -63,6 +64,7 @@ int GetIndex(int rank, int file) {
 }
 
 int GetSetBit(U64 bitboard) {
+	// function that returns index of least significant set bit
 	// the builtin function returns set bit + 1, so subtracting 1 reverses that
 	int index = __builtin_ffsll(bitboard) - 1;
 
@@ -82,28 +84,29 @@ int GetFile(int index) {
 	return file;
 }
 
+/* Takes current king location bitboard, own pieces bitboard and returns moves */
 U64 KingMoves(U64 king_loc, U64 own_pieces, U64 *clear_file) {
-	U64 a_file_clip, h_file_clip, spot_1, spot_2, spot_3, spot_4, spot_5, spot_6, spot_7, spot_8;
+	U64 a_file_clip, h_file_clip, spot_1, spot_2, spot_3, spot_4, spot_5, spot_6, spot_7, spot_8; // 8 possible moves for the King
 	U64 valid_moves;
 	// if king is on a or h file, it will clear the bitboard (give 0)
 	a_file_clip = king_loc & clear_file[0];
 	h_file_clip = king_loc & clear_file[7];
 
-	spot_1 = a_file_clip << 7; 
-	spot_8 = a_file_clip >> 1;
+	spot_1 = a_file_clip << 7; // if King was on the a-file, it is now empty and no move will be generated here (see King move mapping)
+	spot_8 = a_file_clip >> 1; 
 	spot_7 = a_file_clip >> 9;
 
-	spot_3 = h_file_clip << 9;
+	spot_3 = h_file_clip << 9; // does the same thing as above, but on the right side
 	spot_4 = h_file_clip << 1;
 	spot_5 = h_file_clip >> 7;
 
-	spot_2 = king_loc << 8;
-	spot_6 = king_loc >> 8; 
+	spot_2 = king_loc << 8; // generates north move
+	spot_6 = king_loc >> 8; // generates south move
 
 	valid_moves = spot_1 | spot_2 | spot_3 | spot_4 | spot_5 | spot_6 |
 					spot_7 | spot_8;
 
-	// & with not all_pieces of the side to get valid moves
+	// AND with ~own_pieces will zero out any squares where own pieces are
 	valid_moves &= ~own_pieces;
 
 	// FormatMoves(U64 valid_moves, king_loc)
@@ -155,19 +158,21 @@ U64 WhitePawnMoves(U64 pawn_loc, U64 all_pieces, U64 black_pieces, U64 *clear_fi
 	// a bug arose where two_step had no value assigned to it, generated a RN, therefore a move
 	two_step = 0;
 
-	/* not all pieces will yield a BB of empty squares, which when ANDed with pawn loc
-	left shifted 8 (to the next rank) will determine is square in front 
-	of pawn is empty or not
+	/* ~all_pieces will yield a BB of 0s where a piece exists, which when ANDed with pawn loc
+	left shifted 8 (to the next rank) will determine if square in front 
+	of pawn is empty or not. E.g. ~all_pieces is 1 (meaning square is free) and pawn_loc << 8 is 
+	also 1, then it will generate a move for that square
 	*/
 	a_file_clip = pawn_loc & clear_file[0];
 	h_file_clip = pawn_loc & clear_file[7];
 	one_step = (pawn_loc << 8) & ~all_pieces;
 
-	/* will generate an empty bitboard if the pawn is not on the second rank */ 
-	two_step = pawn_loc & mask_rank[1];
+	two_step = pawn_loc & mask_rank[1]; // BB will be 1 only if pawn is on second rank
 	two_step = (two_step << 8) & ~all_pieces; // checks 1 square in front
-	two_step = (two_step << 8) & ~all_pieces; // checks 2 squares in front
+	two_step = (two_step << 8) & ~all_pieces; // checks 2 squares in front, note:
+	// BB will already be 0'ed if a piece is 1 square in front
 
+	// only captures generate diagonal moves, thus clips need to be used
 	left_capture = (a_file_clip << 7) & black_pieces;
 	right_capture = (h_file_clip << 9) & black_pieces;
 //	printf ("%llu \t %llu\n", right_capture, two_step);
@@ -195,7 +200,7 @@ U64 BlackPawnMoves(U64 pawn_loc, U64 all_pieces, U64 white_pieces, U64 *clear_fi
 	/* will generate an empty bitboard if the pawn is not on the second rank */ 
 
 	
-	two_step = pawn_loc & mask_rank[6];
+	two_step = pawn_loc & mask_rank[6]; // will generate empty BB if pawn is not on 7th rank
 	two_step = (two_step >> 8) & ~all_pieces; // checks 1 square in front
 	two_step = (two_step >> 8) & ~all_pieces; // checks 2 squares in front
 	
@@ -213,6 +218,7 @@ U64 BlackPawnMoves(U64 pawn_loc, U64 all_pieces, U64 white_pieces, U64 *clear_fi
 
 	return valid_moves;
 }
+
 
 
 
