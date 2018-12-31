@@ -1,6 +1,5 @@
-int GetLEIndex(int rank, int file) {
-    // A,B,..,H = 0,1,..7 for files e.g. A1 is {0,0}
-    int squareIndex = (56 - (8 * rank)) + file;
-
-    return squareIndex;
-}
+int GetLEIndex(int rank, int file);
+struct Board ParseFEN(char *fen_str);
+struct Board GetBoardArray(char *placement);
+struct Board ParseBoard(char* board_tokens[]);
+struct Board PopulateBitBoard(char board[8][8], struct Board state);

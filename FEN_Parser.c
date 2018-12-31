@@ -3,20 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "ark.h"
-
-// uint16_t
-/*
-int main ()
-{
-    void ParseFEN(char *fen_str);
-	char FEN_str[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
-    ParseFEN(FEN_str);
-
-	return 0;
-}
-*/
-
+#include "FEN_Parser.h"
 
 int GetLEIndex(int rank, int file) {
     // A,B,..,H = 0,1,..7 for files e.g. A1 is {0,0}
@@ -27,7 +14,6 @@ int GetLEIndex(int rank, int file) {
 
 /* Splits FEN string into respective arrays */
 struct Board ParseFEN(char *fen_str) {
-    struct Board GetBoardArray(char *placement);
     char* piece_placement = strtok(fen_str, " "); // the array showing piece position i.e. rnbqkbnr/pppppppp/8/8/...
     char* active_color = strtok(NULL, " "); // array showing whose move it is (w or b)
     char* castling_rights = strtok(NULL, " "); // castling rights KQ/kq
@@ -40,7 +26,6 @@ struct Board ParseFEN(char *fen_str) {
 
 struct Board GetBoardArray(char *placement) 
 {
-    struct Board ParseBoard(char* board_tokens[]);
     int i = 0;
     char *p = strtok (placement, "/");
     char *array[8];
@@ -51,9 +36,6 @@ struct Board GetBoardArray(char *placement)
         array[i++] = p;
         p = strtok (NULL, "/");
     }
-
-//    for (i = 0; i < 8; ++i) 
-//        printf("%s\n", array[i]);
 
     return ParseBoard(array);
 

@@ -1,17 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "ray_attacks.h"
 
-typedef unsigned long long U64;
-U64 ReverseBits (U64 num);
-
-//U64 GenerateRayAttacks(int rank, int file, U64 all_pieces, U64 piece)
 U64 GenerateRayAttacks(U64 rank_mask, U64 file_mask, U64 all_pieces, U64 piece) 
 {	
-	
-	U64 EastAttack(U64 piece, U64 occupied, U64 mask);
-	U64 NorthAttack(U64 piece, U64 occupied, U64 mask); 
-	U64 SouthAttack(U64 piece, U64 occupied, U64 mask); 
-	U64 WestAttack(U64 piece, U64 occupied, U64 mask); 
-	U64 ray_attacks;
 	U64 occupied = (all_pieces & rank_mask) | (all_pieces & file_mask); // pieces occupying the boards
 
 	ray_attacks = EastAttack(piece, occupied, rank_mask) 

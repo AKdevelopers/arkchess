@@ -24,3 +24,4 @@ struct Board {
     U64 all_pieces;
 };
 
+
