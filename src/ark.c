@@ -11,7 +11,6 @@ U64 ClearFile[8] =
 	0xbfbfbfbfbfbfbfbf, 0x7f7f7f7f7f7f7f7f
 }; // when ANDed with another bitboard, clears the file
 
-// left to right
 U64 MaskFile[8] = 
 {
 	0x101010101010101, 0x202020202020202, 0x404040404040404, 
