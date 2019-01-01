@@ -1,11 +1,8 @@
 #include <stdio.h>
+#include <stdint.h>
 #include "ray_attacks.h"
 #include "ark.h"
-#include "FEN_Parser.h"
-#include <stdint.h>
-
-typedef uint16_t U16;
-// main move generator 2
+#include "FEN_Parser.h" 
 
 U64 ClearFile[8] = 
 {
@@ -52,33 +49,6 @@ U64 AntiDiagonalMasks[15] =
 	0x1020408000000000, 0x2040800000000000, 0x4080000000000000, 0x8000000000000000
 };
 
-int main()
-{
-	int GetIndex(int rank, int file); 
-	struct Board InitPosition(char* FEN_str);
-	U64 KingMoves(U64 king_loc, U64 all_pieces, U64 *clear_file);
-	U64 KnightMoves (U64 knight_loc, U64 all_pieces, U64 *clear_file);
-	U64 WhitePawnMoves(U64 pawn_loc, U64 all_pieces, U64 black_pieces, U64 *clear_file, U64 *mask_rank);
-	U64 BlackPawnMoves(U64 pawn_loc, U64 all_pieces, U64 white_pieces, U64 *clear_file, U64 *mask_rank);
-	U64 StraightAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank);
-	U64 DiagonalAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_antidiagonal, U64 *mask_diagonal);
-	U64 QueenMoves(U64 queen_loc, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank, U64 *mask_antidiagonal, U64 *mask_diagonal) ;
-	U64 white_king_moves, white_knight_moves, black_pawn_moves, white_rook_moves, white_bishop_moves, white_queen_moves;
-	
-	char FEN_str[] = "rnbqkbnr/pppppppp/8/8/8/R6R/PPPPPPPP/1NBQKBN1 w KQkq - 0 1";
-	struct Board StartingBoard;
-
-	StartingBoard = InitPosition(FEN_str);
-
-	white_king_moves = KingMoves(StartingBoard.white_king, StartingBoard.all_white_pieces, ClearFile);
-	white_knight_moves = KnightMoves(StartingBoard.white_knights, StartingBoard.all_white_pieces, ClearFile);
-	black_pawn_moves = BlackPawnMoves(StartingBoard.black_pawns, StartingBoard.all_pieces, StartingBoard.all_white_pieces, ClearFile, MaskRank);
-	white_rook_moves = StraightAttacks(StartingBoard.white_rooks, StartingBoard.all_white_pieces, StartingBoard.all_pieces, MaskFile, MaskRank);
-	white_bishop_moves = DiagonalAttacks(StartingBoard.white_bishops, StartingBoard.all_white_pieces, StartingBoard.all_pieces, AntiDiagonalMasks, DiagonalMasks);
-	white_queen_moves = QueenMoves(StartingBoard.white_queen, StartingBoard.all_white_pieces, StartingBoard.all_pieces, MaskFile, MaskRank, AntiDiagonalMasks, DiagonalMasks);
-	printf ("Knight moves: %llu\n", white_rook_moves);
-	return 0;
-}
 
 // initializes the position by parsing the given FEN string and returning bitboards
 struct Board InitPosition(char* FEN_str) {
@@ -146,7 +116,7 @@ U64 KingMoves(U64 king_loc, U64 own_pieces, U64 *clear_file) {
 	return valid_moves;
 }
 
-U64 KnightMoves(U64 knight_loc, U64 own_pieces, U64 *clear_file) {
+U64 KnightMoves(U64 knight_loc, U64 own_pieces) {
 	U64 a_file_clip, h_file_clip, ab_file_clip, gh_file_clip;
 	U64 spot_1, spot_2, spot_3, spot_4, spot_5, spot_6, spot_7, spot_8;
 	U64 valid_moves;
@@ -154,10 +124,10 @@ U64 KnightMoves(U64 knight_loc, U64 own_pieces, U64 *clear_file) {
 	/* if N is on a or h file, the first two will yield empty bitboards
 	if N is on a,b file it will yield the 3rd empty BB, if on g,h, it will yield empty BB */
 
-	a_file_clip = knight_loc & clear_file[0];
-	h_file_clip = knight_loc & clear_file[7];
-	ab_file_clip = knight_loc & clear_file[0] & clear_file[1];
-	gh_file_clip = knight_loc & clear_file[6] & clear_file[7];
+	a_file_clip = knight_loc & ClearFile[0];
+	h_file_clip = knight_loc & ClearFile[7];
+	ab_file_clip = knight_loc & ClearFile[0] & ClearFile[1];
+	gh_file_clip = knight_loc & ClearFile[6] & ClearFile[7];
 
 	// Left exterior (refer to documentation)
 	spot_1 = ab_file_clip << 6;
@@ -181,7 +151,6 @@ U64 KnightMoves(U64 knight_loc, U64 own_pieces, U64 *clear_file) {
 	valid_moves &= ~own_pieces;
 			
 	return valid_moves;
-
 }
 
 U64 WhitePawnMoves(U64 pawn_loc, U64 all_pieces, U64 black_pieces, U64 *clear_file, U64 *mask_rank) {
