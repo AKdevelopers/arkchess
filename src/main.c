@@ -10,16 +10,16 @@ int main()
 	
 	//char FEN_str[] = "rnbqkbnr/pppppppp/8/8/8/R6R/PPPPPPPP/1NBQKBN1 w KQkq - 0 1";
 	char FEN_str[] = "8/8/8/8/8/8/8/1N4N1 w KQkq - 0 1";
-	struct Board StartingBoard;
+	struct Board StartingPos;
 
-	StartingBoard = InitPosition(FEN_str);
+	StartingPos = InitPosition(FEN_str);
 
-	white_king_moves = KingMoves(StartingBoard.white_king, StartingBoard.all_white_pieces, ClearFile);
-	white_knight_moves = KnightMoves(StartingBoard.white_knights, StartingBoard.all_white_pieces);
-	black_pawn_moves = BlackPawnMoves(StartingBoard.black_pawns, StartingBoard.all_pieces, StartingBoard.all_white_pieces, ClearFile, MaskRank);
-	white_rook_moves = StraightAttacks(StartingBoard.white_rooks, StartingBoard.all_white_pieces, StartingBoard.all_pieces, MaskFile, MaskRank);
-	white_bishop_moves = DiagonalAttacks(StartingBoard.white_bishops, StartingBoard.all_white_pieces, StartingBoard.all_pieces, AntiDiagonalMasks, DiagonalMasks);
-	white_queen_moves = QueenMoves(StartingBoard.white_queen, StartingBoard.all_white_pieces, StartingBoard.all_pieces, MaskFile, MaskRank, AntiDiagonalMasks, DiagonalMasks);
+	white_king_moves = KingMoves(StartingPos.white_king, StartingPos.all_white_pieces, ClearFile);
+	white_knight_moves = KnightMoves(StartingPos.white_knights, StartingPos.all_white_pieces);
+	black_pawn_moves = BlackPawnMoves(StartingPos.black_pawns, StartingPos.all_pieces, StartingPos.all_white_pieces, ClearFile, MaskRank);
+	white_rook_moves = StraightAttacks(StartingPos.white_rooks, StartingPos.all_white_pieces, StartingPos.all_pieces, MaskFile, MaskRank);
+	white_bishop_moves = DiagonalAttacks(StartingPos.white_bishops, StartingPos.all_white_pieces, StartingPos.all_pieces, AntiDiagonalMasks, DiagonalMasks);
+	white_queen_moves = QueenMoves(StartingPos.white_queen, StartingPos.all_white_pieces, StartingPos.all_pieces, MaskFile, MaskRank, AntiDiagonalMasks, DiagonalMasks);
 	printf ("Knight moves: %llu\n", white_knight_moves);
 	return 0;
 }
