@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ray_attacks.h"
+#include "types.h"
 
 U64 GenerateRayAttacks(U64 rank_mask, U64 file_mask, U64 all_pieces, U64 piece) 
 {	

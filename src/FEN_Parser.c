@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "ark.h"
 #include "FEN_Parser.h"
+#include "types.h"
 
 int GetLEIndex(int rank, int file) {
     // A,B,..,H = 0,1,..7 for files e.g. A1 is {0,0}

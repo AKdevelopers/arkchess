@@ -1,6 +1,5 @@
 #include <stdio.h>
-
-typedef unsigned long long U64;
+#include "types.h"
 
 U64 ReverseBits (U64 num);
 U64 EastAttack(U64 piece, U64 occupied, U64 mask);

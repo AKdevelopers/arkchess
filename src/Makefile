@@ -1,4 +1,5 @@
 FLAGS = -Wall -g -std=gnu99 
+TYPES = types.h
 
 main : ark.o ray_attacks.o FEN_Parser.o
 	gcc ${FLAGS} -o $@ main.c $^ 
