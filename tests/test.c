@@ -5,7 +5,7 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 #include <CUnit/Console.h>
-#include <CUnit/CUCurses.h>
+//#include <CUnit/CUCurses.h>
 #include "../src/ark.h"
 #include "../src/FEN_Parser.h"
 #include "../src/ray_attacks.h"
@@ -17,12 +17,15 @@ U64 START_BLACK = 0xffff000000000000;
 U64 START_WHITE = 0x000000000000ffff;
 U64 START_WHITE_KNIGHT = 0x42; 
 U64 MIDDLE_PIECE = 0x8000000;
+U64 CORNER = 0x80;
 
 void test_knight()
 {
     CU_ASSERT(KnightMoves(START_WHITE_KNIGHT, START_WHITE_KNIGHT) == 0xa51800);
     CU_ASSERT(KnightMoves(START_WHITE_KNIGHT, START_WHITE) == 0xa50000);
     CU_ASSERT(KnightMoves(MIDDLE_PIECE, MIDDLE_PIECE) == 0x142200221400);
+    CU_ASSERT(KnightMoves(MIDDLE_PIECE, MIDDLE_PIECE | 0x142200221400) == 0);
+    CU_ASSERT(KnightMoves(CORNER, CORNER) == 0x402000);
 }
 
 void test_process_move() {
@@ -30,13 +33,29 @@ void test_process_move() {
 }
 
 void test_gen_knight_moves() {
-    char *fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    struct Board pos = InitPosition(fen_str);
-    U16 *move_list = generate_knight_moves(&pos);
-    U16 expected[4] = {0x401, 0x481, 0x546, 0x5c6};
+	struct Board pos;
+	U16 *move_list = NULL;
+
+    char fen_str_1[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    pos = InitPosition(fen_str_1);
+    move_list = generate_knight_moves(&pos);
+    U16 expected_1[4] = {0x50, 0x52, 0x195, 0x197};
     for (int i = 0; i < vector_size(move_list); i++) {
-        CU_ASSERT(move_list[i] == expected[i]);
+        CU_ASSERT(move_list[i] == expected_1[i]);
     }
+	vector_free(move_list);
+
+	// empty board, single knight in the middle of the board
+    char fen_str_2[] = "8/8/8/8/3N4/8/8/8 w KQkq - 0 1";
+	pos = InitPosition(fen_str_2);
+	move_list = generate_knight_moves(&pos);
+    U16 expected_2[8] = {0x6ca, 0x6cc, 0x6d1, 0x6d5, 0x6e1, 0x6e5, 0x6ea, 0x6ec};
+    for (int i = 0; i < vector_size(move_list); i++) {
+        CU_ASSERT(move_list[i] == expected_2[i]);
+    }
+	vector_free(move_list);
+
+	
 }
 
 void test_bit_func() {
@@ -69,7 +88,8 @@ int main() {
     CU_add_test(suite, "test_bit_func", test_bit_func);
     CU_add_test(suite, "test_process_move", test_process_move);
     CU_add_test(suite, "test_generate_knight_moves", test_gen_knight_moves);
-    CU_curses_run_tests();
+	CU_basic_run_tests();
+    //CU_curses_run_tests();
 
     return 0;
 }
