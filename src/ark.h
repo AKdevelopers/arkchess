@@ -45,5 +45,6 @@ U64 QueenMoves(U64 queen_loc, U64 own_pieces, U64 all_pieces, U64 *mask_file, U6
 int count_set_bits(U64 bb);
 void split_bits_index(U64 bb, int num_set, int *index_arr);
 U16 process_move(int dest, int src, int promo_piece, int special);
+U16 *generate_knight_moves(struct Board *position);
 
 
