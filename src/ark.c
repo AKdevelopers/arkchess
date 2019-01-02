@@ -124,9 +124,10 @@ U16 *generate_knight_moves(struct Board *position) {
 		knight_loc = position->white_knights;
 		own_pieces = position->all_white_pieces;
 	}
+
 	else {
 		knight_loc = position->black_knights;
-		own_pieces = position-> all_black_pieces;
+		own_pieces = position->all_black_pieces;
 	}
 
 	int num_set = count_set_bits(knight_loc);

@@ -33,6 +33,10 @@ void test_gen_knight_moves() {
     char *fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     struct Board pos = InitPosition(fen_str);
     U16 *move_list = generate_knight_moves(&pos);
+    U16 expected[4] = {0x401, 0x481, 0x546, 0x5c6};
+    for (int i = 0; i < vector_size(move_list); i++) {
+        CU_ASSERT(move_list[i] == expected[i]);
+    }
 }
 
 void test_bit_func() {
@@ -64,6 +68,7 @@ int main() {
     CU_add_test(suite, "test_knight_moves", test_knight);
     CU_add_test(suite, "test_bit_func", test_bit_func);
     CU_add_test(suite, "test_process_move", test_process_move);
+    CU_add_test(suite, "test_generate_knight_moves", test_gen_knight_moves);
     CU_curses_run_tests();
 
     return 0;
