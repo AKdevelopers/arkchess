@@ -22,6 +22,8 @@ struct Board {
 
     // All pieces
     U64 all_pieces;
+
+    int colour_to_move;
 };
 
 extern U64 ClearFile[8];
@@ -41,5 +43,7 @@ U64 StraightAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_file
 U64 DiagonalAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_antidiagonal, U64 *mask_diagonal);
 U64 QueenMoves(U64 queen_loc, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank, U64 *mask_antidiagonal, U64 *mask_diagonal) ;
 int count_set_bits(U64 bb);
+void split_bits_index(U64 bb, int num_set, int *index_arr);
+U16 process_move(int dest, int src, int promo_piece, int special);
 
 

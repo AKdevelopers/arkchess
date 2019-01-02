@@ -174,6 +174,7 @@ struct Board PopulateBitBoard(char board[8][8], struct Board state) {
                             state.black_bishops | state.black_queen | state.black_king;
 
     state.all_pieces = state.all_white_pieces | state.all_black_pieces;
+    state.colour_to_move = 0;
 
     return state;
 }

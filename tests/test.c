@@ -9,6 +9,8 @@
 #include "../src/ark.h"
 #include "../src/FEN_Parser.h"
 #include "../src/ray_attacks.h"
+#include "../src/types.h"
+#include "../src/vector.h"
 
 U64 START_POS = 0xffff00000000ffff;
 U64 START_BLACK = 0xffff000000000000; 
@@ -23,10 +25,38 @@ void test_knight()
     CU_ASSERT(KnightMoves(MIDDLE_PIECE, MIDDLE_PIECE) == 0x142200221400);
 }
 
+void test_gen_knight_moves() {
+
+}
+
+void test_bit_func() {
+    CU_ASSERT(count_set_bits(START_WHITE_KNIGHT) == 2);
+    CU_ASSERT(count_set_bits(0x8000000000000001) == 2);
+    CU_ASSERT(count_set_bits(0x8100040022001081) == 8);
+
+    int arr[2];
+    // basic knight position 
+    split_bits_index(START_WHITE_KNIGHT, 2, arr);
+    CU_ASSERT(arr[0] == 1);
+    CU_ASSERT(arr[1] == 6);
+    // testing first and last bit
+    split_bits_index(0x8000000000000001, 2, arr);
+    CU_ASSERT(arr[0] == 0);
+    CU_ASSERT(arr[1] == 63);
+    // complex 8 bit set randomly
+    int arr2[8];
+    int expected[8] = {0, 7, 12, 25, 29, 42, 56, 63};
+    split_bits_index(0x8100040022001081, 8, arr2);
+    for (int i = 0; i < 8; i++) {
+        CU_ASSERT(arr2[i] == expected[i]);
+    }
+}
+
 int main() {
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("learn", NULL, NULL);
     CU_add_test(suite, "test_knight_moves", test_knight);
+    CU_add_test(suite, "test_bit_func", test_bit_func);
     CU_curses_run_tests();
 
     return 0;

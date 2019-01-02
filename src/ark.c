@@ -3,6 +3,7 @@
 #include "ark.h"
 #include "types.h"
 #include "FEN_Parser.h" 
+#include "vector.h"
 
 U64 ClearFile[8] = 
 {
@@ -116,10 +117,9 @@ U64 KingMoves(U64 king_loc, U64 own_pieces, U64 *clear_file) {
 }
 
 U16 *generate_knight_moves(struct Board *position) {
-	int MAX_KNIGHT_MOVES = 8;
-
 	U64 knight_loc;
 	U64 own_pieces;
+
 	if (position->colour_to_move == 0) {
 		knight_loc = position->white_knights;
 		own_pieces = position->all_white_pieces;
@@ -130,31 +130,40 @@ U16 *generate_knight_moves(struct Board *position) {
 	}
 
 	int num_set = count_set_bits(knight_loc);
-	int size = MAX_KNIGHT_MOVES * num_set;
-
-	U64 knights[num_set]; 
 	int knights_index[num_set];
-	split_bits_index(knight_loc, num_set, knights, knights_index);
+	split_bits_index(knight_loc, num_set, knights_index);
 
-	U16 *move_list = malloc(sizeof(U16) * size);
-	for (int i = 0; i < 100; i++) {
-		move_list[i] = 0;
-	}
+    U16 *move_list = NULL;
+    int num_moves;
 
 	for (int i = 0; i < num_set; i++) {
-		U64 curr = 1 << knights_index[i];
-		U64 move_bb = KnightMoves(curr, own_pieces);
-		U16 move;
+        int curr_src = knights_index[i];
+		U64 curr_bb = 1 << curr_src;
+		U64 move_bb = KnightMoves(curr_bb, own_pieces);
+        num_moves = count_set_bits(move_bb);
+        int dest[num_moves];
+        split_bits_index(move_bb, num_moves, dest);
+        for (int i = 0; i < num_moves; i++) {
+            vector_push_back(move_list, process_move(dest[i], curr_src, 0, 0));
+        }
 	}
+
+    return move_list;
 }
 
-void split_bits_index(U64 bb, int num_set, U64 *piece_arr, int *index_arr) {
+U16 process_move(int dest, int src, int promo_piece, int special) {
+    U16 move = 0;
+    move |= dest | (src << 6);
+
+    return move;
+}
+
+void split_bits_index(U64 bb, int num_set, int *index_arr) {
 	int index = 0;
 	int bit = 0;
 	
-	while (bit < 64 & index < num_set) {
+	while (bit < 64 && index < num_set) {
 		if (bb & 1) {
-			piece_arr[index] = 1 << bit;
 			index_arr[index] = bit;
 			index++;
 		}
@@ -162,6 +171,8 @@ void split_bits_index(U64 bb, int num_set, U64 *piece_arr, int *index_arr) {
 		bit++;
 	}
 }
+
+/*
 void split_bits(U64 bb, int num_set, U64 *piece_arr) {
 	int index = 0;
 	int bit = 0;
@@ -175,6 +186,7 @@ void split_bits(U64 bb, int num_set, U64 *piece_arr) {
 		bit++;
 	}
 }
+*/
 
 int count_set_bits(U64 bb) {
 	int num_set = 0;
