@@ -35,11 +35,12 @@ U64 AntiDiagonalMasks[15];
 
 int GetIndex(int rank, int file); 
 struct Board InitPosition(char* FEN_str);
-U64 KingMoves(U64 king_loc, U64 all_pieces, U64 *clear_file);
+U64 KingMoves(U64 king_loc, U64 all_pieces);
 U64 KnightMoves (U64 knight_loc, U64 all_pieces);
 U64 WhitePawnMoves(U64 pawn_loc, U64 all_pieces, U64 black_pieces, U64 *clear_file, U64 *mask_rank);
 U64 BlackPawnMoves(U64 pawn_loc, U64 all_pieces, U64 white_pieces, U64 *clear_file, U64 *mask_rank);
-U64 StraightAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank);
+//U64 StraightAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank);
+U64 StraightAttacks(struct Board *position);
 U64 DiagonalAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_antidiagonal, U64 *mask_diagonal);
 U64 QueenMoves(U64 queen_loc, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank, U64 *mask_antidiagonal, U64 *mask_diagonal) ;
 int count_set_bits(U64 bb);

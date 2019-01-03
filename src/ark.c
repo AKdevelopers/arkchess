@@ -74,25 +74,20 @@ int GetSetBit(U64 bitboard) {
 }
 
 int GetRank(int index) {
-	// e.g. index = 64
-	int rank = index / 8;
-
-	return rank;
+	return index / 8;
 }
 
 int GetFile(int index) {
-	int file = index % 8;
-
-	return file;
+	return index % 8;
 }
 
 /* Takes current king location bitboard, own pieces bitboard and returns moves */
-U64 KingMoves(U64 king_loc, U64 own_pieces, U64 *clear_file) {
+U64 KingMoves(U64 king_loc, U64 own_pieces) {
 	U64 a_file_clip, h_file_clip, spot_1, spot_2, spot_3, spot_4, spot_5, spot_6, spot_7, spot_8; // 8 possible moves for the King
 	U64 valid_moves;
 	// if king is on a or h file, it will clear the bitboard (give 0)
-	a_file_clip = king_loc & clear_file[0];
-	h_file_clip = king_loc & clear_file[7];
+	a_file_clip = king_loc & ClearFile[0];
+	h_file_clip = king_loc & ClearFile[7];
 
 	spot_1 = a_file_clip << 7; // if King was on the a-file, it is now empty and no move will be generated here (see King move mapping)
 	spot_8 = a_file_clip >> 1; 
@@ -110,8 +105,6 @@ U64 KingMoves(U64 king_loc, U64 own_pieces, U64 *clear_file) {
 
 	// AND with ~own_pieces will zero out any squares where own pieces are
 	valid_moves &= ~own_pieces;
-
-	// FormatMoves(U64 valid_moves, king_loc)
 
 	return valid_moves;
 }
@@ -303,7 +296,6 @@ U64 BlackPawnMoves(U64 pawn_loc, U64 all_pieces, U64 white_pieces, U64 *clear_fi
 }
 
 void FilterPieces(U64 piece_BB, int index_array[]) {
-	// take the passed array, fill it in, it will be an object on a higher scope 
 	int counter = 0;
 
 	while (piece_BB != 0) {
@@ -312,6 +304,28 @@ void FilterPieces(U64 piece_BB, int index_array[]) {
 		counter++;
 	}
 }
+
+U64 StraightAttacks(struct Board *position) {
+	U64 valid_moves = 0;
+	int index, file, rank;
+	int piece_locations[10] = {0};
+	int counter = 0;
+
+	FilterPieces(piece_BB, piece_locations);
+
+	while (piece_locations[counter] != 0) { 
+		U64 current_piece_BB = 1;
+		// once the condition is met, there are no more pieces to generate moves for
+		file = GetFile(piece_locations[counter]);
+		rank = GetRank(piece_locations[counter]);
+		current_piece_BB <<= piece_locations[counter];
+
+		valid_moves |= GenerateRayAttacks(mask_rank[rank], mask_file[file], all_pieces, current_piece_BB) & (~own_pieces);
+		counter++;
+	}
+
+	return valid_moves;
+}	
 
 U64 StraightAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank) {
 	U64 valid_moves = 0;

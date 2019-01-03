@@ -79,6 +79,7 @@ struct Board ParseBoard(char* board_tokens[]) {
     // this function returns fully populated bitboards
 
 
+	/*
     // print the representation
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -87,6 +88,7 @@ struct Board ParseBoard(char* board_tokens[]) {
         printf ("\n");
     }  
     printf ("\n");
+	*/
     return PopulatedBoard;  
 }
 

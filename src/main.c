@@ -23,6 +23,5 @@ int main()
 	white_bishop_moves = DiagonalAttacks(StartingPos.white_bishops, StartingPos.all_white_pieces, StartingPos.all_pieces, AntiDiagonalMasks, DiagonalMasks);
 	white_queen_moves = QueenMoves(StartingPos.white_queen, StartingPos.all_white_pieces, StartingPos.all_pieces, MaskFile, MaskRank, AntiDiagonalMasks, DiagonalMasks);
 	*/
-	printf ("Knight moves: %llu\n", white_knight_moves);
 	return 0;
 }

@@ -16,8 +16,21 @@ U64 START_POS = 0xffff00000000ffff;
 U64 START_BLACK = 0xffff000000000000; 
 U64 START_WHITE = 0x000000000000ffff;
 U64 START_WHITE_KNIGHT = 0x42; 
+U64 START_WHITE_KING = 0x10;
 U64 MIDDLE_PIECE = 0x8000000;
-U64 CORNER = 0x80;
+U64 BOTTOM_RIGHT = 0x80;
+U64 TOP_RIGHT = 0x8000000000000000;
+U64 BOTTOM_LEFT = 0x1;
+
+// test if KingMoves func is generating the correct
+// bitboards
+void test_king_bb() {
+	CU_ASSERT(KingMoves(START_WHITE_KING, START_WHITE) == 0);
+	// king on a-file
+	CU_ASSERT(KingMoves(BOTTOM_LEFT, BOTTOM_LEFT) == 0x302);
+	// king on h-file
+	CU_ASSERT(KingMoves(TOP_RIGHT, TOP_RIGHT) == 0x40c0000000000000);
+}
 
 void test_knight()
 {
@@ -25,7 +38,7 @@ void test_knight()
     CU_ASSERT(KnightMoves(START_WHITE_KNIGHT, START_WHITE) == 0xa50000);
     CU_ASSERT(KnightMoves(MIDDLE_PIECE, MIDDLE_PIECE) == 0x142200221400);
     CU_ASSERT(KnightMoves(MIDDLE_PIECE, MIDDLE_PIECE | 0x142200221400) == 0);
-    CU_ASSERT(KnightMoves(CORNER, CORNER) == 0x402000);
+    CU_ASSERT(KnightMoves(BOTTOM_RIGHT, BOTTOM_RIGHT) == 0x402000);
 }
 
 void test_process_move() {
@@ -88,6 +101,7 @@ int main() {
     CU_add_test(suite, "test_bit_func", test_bit_func);
     CU_add_test(suite, "test_process_move", test_process_move);
     CU_add_test(suite, "test_generate_knight_moves", test_gen_knight_moves);
+    CU_add_test(suite, "test_king_bitboard", test_king_bb);
 	CU_basic_run_tests();
     //CU_curses_run_tests();
 
