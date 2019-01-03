@@ -2,15 +2,16 @@
 #include <stdlib.h>
 #include "ray_attacks.h"
 #include "types.h"
+#include "ark.h"
 
-U64 GenerateRayAttacks(U64 rank_mask, U64 file_mask, U64 all_pieces, U64 piece) 
+U64 GenerateRayAttacks(U64 rank, U64 file, U64 all_pieces, U64 piece) 
 {	
-	U64 occupied = (all_pieces & rank_mask) | (all_pieces & file_mask); // pieces occupying the boards
+	U64 occupied = (all_pieces & MaskRank[rank]) | (all_pieces & MaskFile[file]); // pieces occupying the boards
 
-	ray_attacks = EastAttack(piece, occupied, rank_mask) 
-				| NorthAttack(piece, occupied, file_mask) 
-				| SouthAttack(piece, occupied, file_mask) 
-				| WestAttack(piece, occupied, rank_mask);
+	ray_attacks = EastAttack(piece, occupied, MaskRank[rank]) 
+				| NorthAttack(piece, occupied, MaskFile[file]) 
+				| SouthAttack(piece, occupied, MaskFile[file]) 
+				| WestAttack(piece, occupied, MaskRank[rank]);
 
 	return ray_attacks;
 }

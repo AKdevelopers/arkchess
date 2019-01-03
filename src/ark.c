@@ -49,6 +49,27 @@ U64 AntiDiagonalMasks[15] =
 	0x1020408000000000, 0x2040800000000000, 0x4080000000000000, 0x8000000000000000
 };
 
+U16 DEST_MASK = 0x3f;
+U16 SRC_MASK = 0xfc0;
+U16 PROMO_PIECE_MASK = 0x3000;
+U16 SPECIAL_MOVE_MASK = 0xc000;
+
+get_src(U16 move) {
+    return (SRC_MASK & move) >> 6;
+}
+
+get_dest(U16 move) {
+    return DEST_MASK & move;
+}
+
+get_promo_piece(U16 move) {
+    return (PROMO_PIECE_MASK & move) >> 12;
+}
+
+get_special_move(U16 move) {
+    return (SPECIAL_MOVE_MASK & move) >> 14;
+}
+
 
 // initializes the position by parsing the given FEN string and returning bitboards
 struct Board InitPosition(char* FEN_str) {
@@ -109,19 +130,9 @@ U64 KingMoves(U64 king_loc, U64 own_pieces) {
 	return valid_moves;
 }
 
-U16 *generate_knight_moves(struct Board *position) {
-	U64 knight_loc;
-	U64 own_pieces;
-
-	if (position->colour_to_move == 0) {
-		knight_loc = position->white_knights;
-		own_pieces = position->all_white_pieces;
-	}
-
-	else {
-		knight_loc = position->black_knights;
-		own_pieces = position->all_black_pieces;
-	}
+U16 *get_knight_moves(struct Board *pos) {
+    U64 knight_loc = (pos->colour_to_move) ? pos->black_knights : pos->white_knights;
+    U64 own_pieces = (pos->colour_to_move) ? pos->all_black_pieces : pos->all_white_pieces;
 
 	int num_set = count_set_bits(knight_loc);
 	int knights_index[num_set];
@@ -147,7 +158,7 @@ U16 *generate_knight_moves(struct Board *position) {
 
 U16 process_move(int dest, int src, int promo_piece, int special) {
     U16 move = 0;
-    move |= dest | (src << 6);
+    move |= dest | (src << 6) | (promo_piece << 12) | (special << 14);
 
     return move;
 }
@@ -165,22 +176,6 @@ void split_bits_index(U64 bb, int num_set, int *index_arr) {
 		bit++;
 	}
 }
-
-/*
-void split_bits(U64 bb, int num_set, U64 *piece_arr) {
-	int index = 0;
-	int bit = 0;
-	
-	while (bit < 64 & index < num_set) {
-		if (bb & 1) {
-			piece_arr[index] = 1 << bit;
-			index++;
-		}
-		bb >>= 1;
-		bit++;
-	}
-}
-*/
 
 int count_set_bits(U64 bb) {
 	int num_set = 0;
@@ -305,49 +300,37 @@ void FilterPieces(U64 piece_BB, int index_array[]) {
 	}
 }
 
-U64 StraightAttacks(struct Board *position) {
-	U64 valid_moves = 0;
-	int index, file, rank;
-	int piece_locations[10] = {0};
-	int counter = 0;
+U16 *get_rook_moves(struct Board *pos) {
+    int index, file, rank;
+    U64 move_bb, piece_bb;
+    U64 rook_loc = (pos->colour_to_move) ? pos->black_rooks : pos->white_rooks;
+    U64 own_pieces = (pos->colour_to_move) ? pos->all_black_pieces : pos->all_white_pieces;
 
-	FilterPieces(piece_BB, piece_locations);
+    int num_rooks = count_set_bits(rook_loc);
+    int rook_index_list[num_rooks];
+    split_bits_index(rook_loc, num_rooks, rook_index_list);
 
-	while (piece_locations[counter] != 0) { 
-		U64 current_piece_BB = 1;
-		// once the condition is met, there are no more pieces to generate moves for
-		file = GetFile(piece_locations[counter]);
-		rank = GetRank(piece_locations[counter]);
-		current_piece_BB <<= piece_locations[counter];
+    U16 *move_list = NULL;
+    for (int i = 0; i < num_rooks; i++) {
+        index = rook_index_list[i];
+        file = GetFile(index);
+        rank = GetRank(index);
+        piece_bb = 1 << index;
+        move_bb = GenerateRayAttacks(rank, file, pos->all_pieces, piece_bb) & (~own_pieces);
+        fill_move_list(move_list, move_bb, index);
+    }
+    return move_list;
+}
 
-		valid_moves |= GenerateRayAttacks(mask_rank[rank], mask_file[file], all_pieces, current_piece_BB) & (~own_pieces);
-		counter++;
-	}
+void fill_move_list(U16 *move_list, U64 move_bb, int src_index) {
+    int num_moves = count_set_bits(move_bb);
+    int dest[num_moves];
+    split_bits_index(move_bb, num_moves, dest);
 
-	return valid_moves;
-}	
-
-U64 StraightAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank) {
-	U64 valid_moves = 0;
-	int index, file, rank;
-	int piece_locations[10] = {0};
-	int counter = 0;
-
-	FilterPieces(piece_BB, piece_locations);
-
-	while (piece_locations[counter] != 0) { 
-		U64 current_piece_BB = 1;
-		// once the condition is met, there are no more pieces to generate moves for
-		file = GetFile(piece_locations[counter]);
-		rank = GetRank(piece_locations[counter]);
-		current_piece_BB <<= piece_locations[counter];
-
-		valid_moves |= GenerateRayAttacks(mask_rank[rank], mask_file[file], all_pieces, current_piece_BB) & (~own_pieces);
-		counter++;
-	}
-
-	return valid_moves;
-}	
+    for (int i = 0; i < num_moves; i++) {
+        vector_push_back(move_list, process_move(dest[i], src_index, 0, 0));
+    }
+}
 
 U64 DiagonalAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_antidiagonal, U64 *mask_diagonal) {
 	U64 valid_moves;
@@ -387,7 +370,7 @@ int GetAntiDiagonal(U64 piece_BB, int file, int rank) {
 U64 QueenMoves(U64 queen_loc, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank, U64 *mask_antidiagonal, U64 *mask_diagonal) {
 	U64 valid_moves, straight_attacks, diagonal_attacks;
 
-	straight_attacks = StraightAttacks(queen_loc, own_pieces, all_pieces, mask_file, mask_rank);
+	//straight_attacks = StraightAttacks(queen_loc, own_pieces, all_pieces, mask_file, mask_rank);
 	diagonal_attacks = DiagonalAttacks(queen_loc, own_pieces, all_pieces, mask_antidiagonal, mask_diagonal);
 	valid_moves = straight_attacks | diagonal_attacks;
 

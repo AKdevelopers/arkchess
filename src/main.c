@@ -6,7 +6,7 @@
 
 int main()
 {
-	U64 white_king_moves, white_knight_moves, black_pawn_moves, white_rook_moves, white_bishop_moves, white_queen_moves;
+	//U64 white_king_moves, white_knight_moves, black_pawn_moves, white_rook_moves, white_bishop_moves, white_queen_moves;
 	
 	//char FEN_str[] = "rnbqkbnr/pppppppp/8/8/8/R6R/PPPPPPPP/1NBQKBN1 w KQkq - 0 1";
 	//char FEN_str[] = "8/8/8/8/8/8/8/1N4N1 w KQkq - 0 1";
