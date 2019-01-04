@@ -34,7 +34,7 @@ U64 MaskRank[8] =
 };
 
 	/* from top left to bottom right, like this slash: / */
-U64 DiagonalMasks[15] = 
+U64 DiagonalMask[15] = 
 {
 	0x100000000000000, 0x201000000000000, 0x402010000000000, 0x804020100000000, 
 	0x1008040201000000, 0x2010080402010000, 0x4020100804020100, 0x8040201008040201,
@@ -42,7 +42,7 @@ U64 DiagonalMasks[15] =
 };
 
 /* from bottom left to top right, like this backslash: \ */
-U64 AntiDiagonalMasks[15] =
+U64 AntiDiagonalMask[15] =
 {
 	0x1, 0x102, 0x10204, 0x1020408, 0x102040810, 0x10204081020, 0x1020408102040, 
 	0x102040810204080, 0x204081020408000, 0x408102040800000, 0x810204080000000, 
@@ -315,7 +315,7 @@ U16 *get_rook_moves(struct Board *pos) {
         file = GetFile(index);
         rank = GetRank(index);
         piece_bb = 1 << index;
-        move_bb = generate_ray_attacks(rank, file, pos, piece_bb);
+        move_bb = generate_ray_attacks(MaskRank[rank], MaskFile[file], pos, piece_bb);
         fill_move_list(move_list, move_bb, index);
     }
     return move_list;
@@ -331,27 +331,7 @@ void fill_move_list(U16 *move_list, U64 move_bb, int src_index) {
     }
 }
 
-/*
-U64 DiagonalAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_antidiagonal, U64 *mask_diagonal) {
-	U64 valid_moves;
-
-	int diagonal, antidiagonal, index, file, rank;
-	int GetDiagonal(U64 piece_BB, int file, int rank); 
-	int GetAntiDiagonal(U64 piece_BB, int file, int rank);
-
-	index = GetSetBit(piece_BB);
-	file = GetFile(index);
-	rank = GetRank(index);
-
-	diagonal = GetDiagonal(piece_BB, file, rank);
-	antidiagonal = GetAntiDiagonal(piece_BB, file, rank);
-	valid_moves = generate_ray_attacks(mask_antidiagonal[antidiagonal], mask_diagonal[diagonal], all_pieces, piece_BB) &
-					(~own_pieces);
-
-	return valid_moves;
-}
-
-int GetDiagonal(U64 piece_BB, int file, int rank) {
+int get_diagonal(int file, int rank) {
 	int diagonal;
 
 	diagonal = file - (rank - 7);
@@ -359,13 +339,55 @@ int GetDiagonal(U64 piece_BB, int file, int rank) {
 	return diagonal;
 }
 
-int GetAntiDiagonal(U64 piece_BB, int file, int rank) {
+int get_anti_diagonal(int file, int rank) {
 	int antidiagonal;
 
 	antidiagonal = file + rank;
 
 	return antidiagonal;
 }
+
+U16 *get_bishop_moves(struct Board *pos) {
+    int index, file, rank, diagonal, antidiagonal;
+    U64 move_bb, piece_bb;
+    U64 pieces_loc = (pos->colour_to_move) ? pos->black_bishops : pos->white_bishops;
+
+    int num_pieces = count_set_bits(pieces_loc);
+    int piece_index_list[num_pieces];
+    split_bits_index(pieces_loc, num_pieces, piece_index_list);
+
+    U16 *move_list = NULL;
+    for (int i = 0; i < num_pieces; i++) {
+        index = piece_index_list[i];
+        file = GetFile(index);
+        rank = GetRank(index);
+        diagonal = get_diagonal( file, rank);
+        antidiagonal = get_anti_diagonal(file, rank);
+        piece_bb = 1 << index;
+        move_bb = generate_ray_attacks(AntiDiagonalMask[antidiagonal], DiagonalMask[diagonal], pos, piece_bb);
+        fill_move_list(move_list, move_bb, index);
+    }
+    return move_list;
+}
+
+/*
+U64 DiagonalAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_antidiagonal, U64 *mask_diagonal) {
+	U64 valid_moves;
+
+	int diagonal, antidiagonal, index, file, rank;
+
+	index = GetSetBit(piece_BB);
+	file = GetFile(index);
+	rank = GetRank(index);
+
+	diagonal = get_diagonal(piece_BB, file, rank);
+	antidiagonal = get_anti_diagonal(piece_BB, file, rank);
+	valid_moves = generate_ray_attacks(mask_antidiagonal[antidiagonal], mask_diagonal[diagonal], all_pieces, piece_BB) &
+					(~own_pieces);
+
+	return valid_moves;
+}
+
 
 U64 QueenMoves(U64 queen_loc, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank, U64 *mask_antidiagonal, U64 *mask_diagonal) {
 	U64 valid_moves, straight_attacks = 0, diagonal_attacks;

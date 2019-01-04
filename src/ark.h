@@ -32,8 +32,8 @@ extern U64 ClearFile[8];
 extern U64 MaskFile[8];
 extern U64 ClearRank[8];
 extern U64 MaskRank[8];
-extern U64 DiagonalMasks[15];
-extern U64 AntiDiagonalMasks[15];
+extern U64 DiagonalMask[15];
+extern U64 AntiDiagonalMask[15];
 
 int GetIndex(int rank, int file); 
 struct Board InitPosition(char* FEN_str);

@@ -4,17 +4,18 @@
 #include "types.h"
 #include "ark.h"
 
-U64 generate_ray_attacks(int rank, int file, struct Board *pos, U64 piece) 
+U64 generate_ray_attacks(U64 rank_mask, U64 file_mask, struct Board *pos, U64 piece) 
 {	
     U64 own_pieces = (pos->colour_to_move) ? pos->all_black_pieces : pos->all_white_pieces;
 	// find all pieces occupying the rank and file the piece is currently on
-	U64 occupied = (pos->all_pieces & MaskRank[rank]) | (pos->all_pieces & MaskFile[file]); 
+	U64 occupied = (pos->all_pieces & rank_mask) | (pos->all_pieces & file_mask); 
 
-	ray_attacks = EastAttack(piece, occupied, MaskRank[rank]) 
-				| NorthAttack(piece, occupied, MaskFile[file]) 
-				| SouthAttack(piece, occupied, MaskFile[file]) 
-				| WestAttack(piece, occupied, MaskRank[rank]);
+	ray_attacks = EastAttack(piece, occupied, rank_mask) 
+				| NorthAttack(piece, occupied, file_mask) 
+				| SouthAttack(piece, occupied, file_mask) 
+				| WestAttack(piece, occupied, rank_mask);
 
+    printf ("white rooks: %lu, black rooks: %lu, pre: %lu, rays: %lu\n", pos->white_rooks, pos->black_rooks, ray_attacks, ray_attacks & (~own_pieces));
 	return ray_attacks & (~own_pieces);
 }
 
