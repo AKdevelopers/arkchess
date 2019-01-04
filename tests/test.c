@@ -98,6 +98,31 @@ void test_generate_ray_attacks() {
     char fen_11[] = "8/8/1b6/6p1/8/4B3/8/8 w KQkq - 0 1";
 	pos = InitPosition(fen_11);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[9], &pos, MIDDLE_PIECE_2) == 0x24428002844);
+	
+    // test 12 : bishop on d4, opponent blockers on c5 and e5
+    char fen_12[] = "8/8/8/2b1p3/3B4/8/8/8 w KQkq - 0 1";
+	pos = InitPosition(fen_12);
+	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[7], &pos, MIDDLE_PIECE) == 0x1400142241);
+	
+    // test 13 : bishop on d4, opponent blockers on b6 and f6
+    char fen_13[] = "8/8/1b3p2/8/3B4/8/8/8 w KQkq - 0 1";
+	pos = InitPosition(fen_13);
+	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[7], &pos, MIDDLE_PIECE) == 0x221400142241);
+	
+    // test 14 : bishop on f2, opponent blockers on b6 and h4
+    char fen_14[] = "8/8/1b6/8/7p/8/5B2/8  w KQkq - 0 1";
+	pos = InitPosition(fen_14);
+	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[11], &pos, 0x2000) == 0x20488500050);
+	
+    // test 15 : bishop on g1, opponent blockers on a7 and h2
+    char fen_15[] = "8/b7/8/8/8/8/7p/6B1 w KQkq - 0 1";
+	pos = InitPosition(fen_15);
+	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[13], &pos, 0x40) == 0x102040810a000);
+	
+    // test 16 : bishop on b1, opponent blockers on a2 and h7
+    char fen_16[] = "8/7b/8/8/8/8/b7/1B6 w KQkq - 0 1";
+	pos = InitPosition(fen_16);
+	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[1], DiagonalMask[8], &pos, 0x2) == 0x80402010080500);
 }
 
 void test_get_rook_moves() {

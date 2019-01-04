@@ -10,44 +10,25 @@ U64 generate_ray_attacks(U64 rank_mask, U64 file_mask, struct Board *pos, U64 pi
 	// find all pieces occupying the rank and file the piece is currently on
 	U64 occupied = (pos->all_pieces & rank_mask) | (pos->all_pieces & file_mask); 
 
-	ray_attacks = EastAttack(piece, occupied, rank_mask) 
-				| NorthAttack(piece, occupied, file_mask) 
-				| SouthAttack(piece, occupied, file_mask) 
-				| WestAttack(piece, occupied, rank_mask);
+	ray_attacks = positive_ray_attack(piece, occupied, rank_mask) 
+				| positive_ray_attack(piece, occupied, file_mask) 
+				| negative_ray_attack(piece, occupied, file_mask) 
+				| negative_ray_attack(piece, occupied, rank_mask);
 
-    printf ("white rooks: %lu, black rooks: %lu, pre: %lu, rays: %lu\n", pos->white_rooks, pos->black_rooks, ray_attacks, ray_attacks & (~own_pieces));
 	return ray_attacks & (~own_pieces);
 }
 
-
-U64 EastAttack(U64 piece, U64 occupied, U64 mask) {
-	U64 east_attack;
-	east_attack = (occupied ^ (occupied - 2 * piece)) & mask;
-	return east_attack;
+/* north and east attacks */
+U64 positive_ray_attack(U64 piece, U64 occupied, U64 mask) {
+	occupied &= mask;
+	return (occupied ^ (occupied - 2 * piece)) & mask;
 }
 
-U64 NorthAttack(U64 piece, U64 occupied, U64 mask) {
-	U64 north_attack;
-	U64 blockers;
-	blockers = occupied & mask;
-	north_attack = (occupied ^ (blockers - 2 * piece)) & mask;
-	return north_attack;
-}
-
-/* A file mask required for vertical attack */
-U64 SouthAttack(U64 piece, U64 occupied, U64 mask) {
-	U64 south_attack;
-	U64 blockers;
-	blockers = ReverseBits(occupied & mask);
-	south_attack = (occupied ^ ReverseBits((blockers - 2 * ReverseBits(piece)))) & mask;
-	return south_attack;
-}
-
-/* rank mask required for horizontal attack */
-U64 WestAttack(U64 piece, U64 occupied, U64 mask) {
-	U64 west_attack;
-	west_attack = (occupied ^ ReverseBits((ReverseBits(occupied) - 2 * ReverseBits(piece)))) & mask;
-	return west_attack;
+/* south and west attacks */
+U64 negative_ray_attack(U64 piece, U64 occupied, U64 mask) {
+	U64 r_occupied = ReverseBits(occupied & mask);
+	U64 r_piece = ReverseBits(piece);
+	return (occupied ^ ReverseBits((r_occupied - 2 * r_piece))) & mask;
 }
 
 U64 ReverseBits (U64 num)
