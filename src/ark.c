@@ -370,6 +370,30 @@ U16 *get_bishop_moves(struct Board *pos) {
     return move_list;
 }
 
+U16 *get_queen_moves(struct Board *pos) {
+    int index, file, rank, diagonal, antidiagonal;
+    U64 move_bb, piece_bb;
+    U64 pieces_loc = (pos->colour_to_move) ? pos->black_queen : pos->white_queen;
+
+    int num_pieces = count_set_bits(pieces_loc);
+    int piece_index_list[num_pieces];
+    split_bits_index(pieces_loc, num_pieces, piece_index_list);
+
+    U16 *move_list = NULL;
+    for (int i = 0; i < num_pieces; i++) {
+        index = piece_index_list[i];
+        file = GetFile(index);
+        rank = GetRank(index);
+        diagonal = get_diagonal( file, rank);
+        antidiagonal = get_anti_diagonal(file, rank);
+        piece_bb = 1 << index;
+        move_bb = generate_ray_attacks(MaskRank[rank], MaskFile[file], pos, piece_bb) | 
+			generate_ray_attacks(AntiDiagonalMask[antidiagonal], DiagonalMask[diagonal], pos, piece_bb);
+        fill_move_list(move_list, move_bb, index);
+    }
+    return move_list;
+}
+
 /*
 U64 DiagonalAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_antidiagonal, U64 *mask_diagonal) {
 	U64 valid_moves;

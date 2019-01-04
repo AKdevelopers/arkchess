@@ -72,7 +72,6 @@ void test_generate_ray_attacks() {
 	pos = InitPosition(fen_6);
 	CU_ASSERT(generate_ray_attacks(MaskRank[7], MaskFile[7], &pos, TOP_RIGHT) == 0x7080800000000000);
 
-
 	// BISHOP TESTS
     // test 7 : bishop on d4, empty board
     char fen_7[] = "8/8/8/8/3B4/8/8/8 w KQkq - 0 1";
