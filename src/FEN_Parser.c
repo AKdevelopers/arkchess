@@ -5,25 +5,6 @@
 #include "FEN_Parser.h"
 #include "types.h"
 
-void init_position(struct Board *pos, char *fen_str) {
-    char* piece_placement = strtok(fen_str, " "); 
-	char* active_color = strtok(NULL, " "); 
-    char* castling_rights = strtok(NULL, " "); 
-    char* ep_square = strtok(NULL, " "); 
-    char* half_move_counter = strtok(NULL, " "); 
-    char* full_move_counter = strtok(NULL, " ");
-
-	pos->colour_to_move = (strcmp(active_color, "w")) ? 1 : 0;
-	pos->castling_rights = parse_castling_rights(castling_rights);
-	pos->ep_square = (strcmp(ep_square, "-")) ? strtol(ep_square, NULL, 10) : -1;
-	pos->half_move_ctr = strtol(half_move_counter, NULL, 10);
-	pos->full_move_ctr = strtol(full_move_counter, NULL, 10); 
-}
-
-char parse_castling_rights(char *castling_rights) {
-	return 0;
-}
-
 int GetLEIndex(int rank, int file) {
     // A,B,..,H = 0,1,..7 for files e.g. A1 is {0,0}
     int squareIndex = (56 - (8 * rank)) + file;
