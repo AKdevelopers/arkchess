@@ -9,9 +9,7 @@ void init_position(struct Board *pos, char *fen_str) {
     memset(pos, 0, sizeof(struct Board));
     char* piece_placement = strtok(fen_str, " "); 
 	char* active_color = strtok(NULL, " "); 
-    char* castling_rights = strtok(NULL, " "); 
-    char* ep_square = strtok(NULL, " "); 
-    char* half_move_counter = strtok(NULL, " "); 
+    char* castling_rights = strtok(NULL, " "); char* ep_square = strtok(NULL, " "); char* half_move_counter = strtok(NULL, " "); 
     char* full_move_counter = strtok(NULL, " ");
 
 	pos->colour_to_move = (strcmp(active_color, "w")) ? 1 : 0;
@@ -60,7 +58,7 @@ void split_placement(char *rank_arr[8], char *placement) {
     }
 }
 
-void process_placement(char board_arr[8][8], char *rank_arr[8]) {
+void process_placement(char board_arr[][8], char *rank_arr[8]) {
     int counter;
 
     for (int i = 0; i < 8; i++) { // i means rank, j means file
@@ -81,9 +79,19 @@ void process_placement(char board_arr[8][8], char *rank_arr[8]) {
             j++; // move onto next file
         }
     }
+	
+    // print the representation
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            printf ("%c ", board_arr[i][j]);
+        }
+        printf ("\n");
+    }  
+    printf ("\n");
+	
 }
 
-void fill_board(struct Board *pos, char board[8][8]) {
+void fill_board(struct Board *pos, char board[][8]) {
     /* The code that populates every bitboard in the Board structure */
     int index;
     char piece;
