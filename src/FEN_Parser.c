@@ -28,27 +28,27 @@ void init_position(struct Board *pos, char *fen_str) {
 }
 
 char parse_castling_rights(char *castling_rights) {
-    c_map = 0;
+    char cmap = 0;
     if (castling_rights[0] == 'K') {
-        c_map |= KINGSIDE_WHITE;
+        cmap |= KINGSIDE_WHITE;
     }
 
     if (castling_rights[1] == 'k') {
-        c_map |= KINGSIDE_BLACK;
+        cmap |= KINGSIDE_BLACK;
     }
 
     if (castling_rights[2] == 'Q') {
-        c_map |= QUEENSIDE_WHITE;
+        cmap |= QUEENSIDE_WHITE;
     }
 
     if (castling_rights[3] == 'q') {
-        c_map |= QUEENSIDE_BLACK;
+        cmap |= QUEENSIDE_BLACK;
     }
 
 	return cmap;
 }
 
-char split_placement(char **rank_arr, char *placement) {
+void split_placement(char *rank_arr[8], char *placement) {
     int i = 0;
     char *p = strtok(placement, "/");
      
@@ -59,7 +59,7 @@ char split_placement(char **rank_arr, char *placement) {
     }
 }
 
-void process_placement(char **board_arr, char **rank_arr) {
+void process_placement(char board_arr[8][8], char *rank_arr[8]) {
     int counter;
 
     for (int i = 0; i < 8; i++) { // i means rank, j means file
@@ -86,7 +86,6 @@ void fill_board(struct Board *pos, char board[8][8]) {
     /* The code that populates every bitboard in the Board structure */
     int index;
     char piece;
-    U64 shifter = 1;
 
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -131,7 +130,6 @@ void fill_board(struct Board *pos, char board[8][8]) {
                 case 'b':
                     pos->black_bishops |= 1 << index;
                     break;
-
             }
         }
     }
@@ -145,6 +143,8 @@ void fill_board(struct Board *pos, char board[8][8]) {
                                 pos->black_rooks | pos->black_queen | pos->black_king;
 
     pos->all_pieces = pos->all_white_pieces | pos->all_black_pieces;
+
+    printf("all_pieces : %lu, white_pieces : %lu\n", pos->all_pieces, pos->all_white_pieces);
 }
 
 int GetLEIndex(int rank, int file) {
