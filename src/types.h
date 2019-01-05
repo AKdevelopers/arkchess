@@ -29,7 +29,7 @@ struct Board {
     U64 all_pieces;
 
     int colour_to_move;
-	char castling_rights;
+	char castling_rights; // 15 for KQkq, 0 for ---- 
 	int ep_square; // 0..63
 	int half_move_ctr;
 	int full_move_ctr;

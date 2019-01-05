@@ -5,7 +5,6 @@
 #include "FEN_Parser.h" 
 #include "vector.h"
 
-
 U16 DEST_MASK = 0x3f;
 U16 SRC_MASK = 0xfc0;
 U16 PROMO_PIECE_MASK = 0x3000;
