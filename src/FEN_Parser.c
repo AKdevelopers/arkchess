@@ -6,6 +6,7 @@
 #include "types.h"
 
 void init_position(struct Board *pos, char *fen_str) {
+    memset(pos, 0, sizeof(struct Board));
     char* piece_placement = strtok(fen_str, " "); 
 	char* active_color = strtok(NULL, " "); 
     char* castling_rights = strtok(NULL, " "); 
