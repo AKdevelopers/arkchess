@@ -6,7 +6,7 @@
 #include <CUnit/Basic.h>
 #include <CUnit/Console.h>
 //#include <CUnit/CUCurses.h>
-#include "../src/ark.h"
+#include "../src/move_gen.h"
 #include "../src/FEN_Parser.h"
 #include "../src/ray_attacks.h"
 #include "../src/types.h"
