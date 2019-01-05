@@ -28,22 +28,6 @@ U64 BOTTOM_RIGHT = 0x80;
 U64 TOP_RIGHT = 0x8000000000000000;
 U64 BOTTOM_LEFT = 0x1;
 
-void test_fen_parser() {
-	struct Board pos;
-	// test 1 : starting board
-	char fen_1[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-	init_position(&pos, fen_1);
-
-	// test 2 : empty board	
-	char fen_2[] = "8/8/8/8/8/8/8/8 w KQkq - 0 1";
-	init_position(&pos, fen_2);
-
-	CU_ASSERT(pos.all_pieces == 0);
-
-	// test 3 : complex position
-
-}
-
 void test_fill_move_list() {
 	U16 *move_list = NULL;
     U16 expected[8] = {0x6ca, 0x6cc, 0x6d1, 0x6d5, 0x6e1, 0x6e5, 0x6ea, 0x6ec};
