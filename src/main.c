@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "ray_attacks.h"
-#include "ark.h"
+#include "move_gen.h"
 #include "FEN_Parser.h" 
 
 int main()

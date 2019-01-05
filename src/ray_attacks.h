@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "types.h"
-#include "ark.h"
+#include "move_gen.h"
 
 U64 ReverseBits (U64 num);
 U64 positive_ray_attack(U64 piece, U64 occupied, U64 mask);

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "ray_attacks.h"
 #include "types.h"
-#include "ark.h"
+#include "move_gen.h"
 
 U64 generate_ray_attacks(U64 rank_mask, U64 file_mask, struct Board *pos, U64 piece) 
 {	
