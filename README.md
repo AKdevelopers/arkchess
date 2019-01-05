@@ -1,2 +1,2 @@
 # arkchess
-Chess engine written in C
+A chess engine written in C.
