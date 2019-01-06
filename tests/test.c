@@ -224,7 +224,7 @@ int main() {
     CU_add_test(suite, "test_get_knight_moves", test_get_knight_moves);
     CU_add_test(suite, "test_king_bitboard", test_king_bb);
     CU_add_test(suite, "test_fill_move_list", test_fill_move_list);
-    //CU_add_test(suite, "test_generate_ray_attacks", test_generate_ray_attacks);
+    CU_add_test(suite, "test_generate_ray_attacks", test_generate_ray_attacks);
     CU_add_test(suite, "test_fen_parser", test_fen_parser);
 	CU_basic_run_tests();
     //CU_curses_run_tests();

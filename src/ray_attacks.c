@@ -15,7 +15,6 @@ U64 generate_ray_attacks(U64 rank_mask, U64 file_mask, struct Board *pos, U64 pi
 				| negative_ray_attack(piece, occupied, file_mask) 
 				| negative_ray_attack(piece, occupied, rank_mask);
 
-    printf ("rays: %lu\n", ray_attacks & (~own_pieces));
 	return ray_attacks & (~own_pieces);
 }
 

@@ -5,6 +5,23 @@
 #include "FEN_Parser.h"
 #include "types.h"
 
+void *Malloc(int size) {
+    void *result = malloc(size);
+    if (result == NULL) {
+        perror("malloc");
+        exit(1);
+    }
+
+    return result;
+}
+
+void free_board(char **board) {
+	for (int i = 0; i < 8; i++) {
+		free(board[i]);
+	}
+	free(board);
+}
+
 void init_position(struct Board *pos, char *fen_str) {
     memset(pos, 0, sizeof(struct Board));
     char* piece_placement = strtok(fen_str, " "); 
@@ -19,11 +36,17 @@ void init_position(struct Board *pos, char *fen_str) {
 	pos->full_move_ctr = strtol(full_move_counter, NULL, 10); 
 
     char *rank_arr[8];
-    char board_arr[8][8];
+    //char board_arr[8][8];
+
+	char **board_arr = Malloc(sizeof(char *) * 8);
+	for (int i = 0; i < 8; i++) {
+		board_arr[i] = Malloc(sizeof(char) * 8);
+	}
 
     split_placement(rank_arr, piece_placement);
     process_placement(board_arr, rank_arr);
     fill_board(pos, board_arr);
+	free_board(board_arr);
 }
 
 char parse_castling_rights(char *castling_rights) {
@@ -58,7 +81,7 @@ void split_placement(char *rank_arr[8], char *placement) {
     }
 }
 
-void process_placement(char board_arr[][8], char *rank_arr[8]) {
+void process_placement(char **board_arr, char *rank_arr[8]) {
     int counter;
 
     for (int i = 0; i < 8; i++) { // i means rank, j means file
@@ -81,6 +104,7 @@ void process_placement(char board_arr[][8], char *rank_arr[8]) {
     }
 	
     // print the representation
+	/*
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             printf ("%c ", board_arr[i][j]);
@@ -88,13 +112,15 @@ void process_placement(char board_arr[][8], char *rank_arr[8]) {
         printf ("\n");
     }  
     printf ("\n");
+	*/
 	
 }
 
-void fill_board(struct Board *pos, char board[][8]) {
+void fill_board(struct Board *pos, char **board) {
     /* The code that populates every bitboard in the Board structure */
     int index;
     char piece;
+	U64 shifter = 1;
 
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -103,41 +129,42 @@ void fill_board(struct Board *pos, char board[][8]) {
 
             switch(piece) {
                 case '-':
+					break;
                 case 'P':
-                    pos->white_pawns |= 1 << index;
+                    pos->white_pawns |= shifter << index;
                     break;
                 case 'p':
-                    pos->black_pawns |= 1 << index;
+                    pos->black_pawns |= shifter << index;
                     break;
                 case 'K':
-                    pos->white_king |= 1 << index;
+                    pos->white_king |= shifter << index;
                     break;
                 case 'k':
-                    pos->black_king |= 1 << index;
+                    pos->black_king |= shifter << index;
                     break;
                 case 'Q':
-                    pos->white_queen |= 1 << index;
+                    pos->white_queen |= shifter << index;
                     break;
                 case 'q':
-                    pos->black_queen |= 1 << index;
+                    pos->black_queen |= shifter << index;
                     break;
                 case 'R':
-                    pos->white_rooks |= 1 << index;
+                    pos->white_rooks |= shifter << index;
                     break;
                 case 'r':
-                    pos->black_rooks |= 1 << index;
+                    pos->black_rooks |= shifter << index;
                     break;
                 case 'N':
-                    pos->white_knights |= 1 << index;
+                    pos->white_knights |= shifter << index;
                     break;
                 case 'n':
-                    pos->black_knights |= 1 << index;
+                    pos->black_knights |= shifter << index;
                     break;
                 case 'B':
-                    pos->white_bishops |= 1 << index;
+                    pos->white_bishops |= shifter << index;
                     break;
                 case 'b':
-                    pos->black_bishops |= 1 << index;
+                    pos->black_bishops |= shifter << index;
                     break;
             }
         }
@@ -152,8 +179,6 @@ void fill_board(struct Board *pos, char board[][8]) {
                                 pos->black_rooks | pos->black_queen | pos->black_king;
 
     pos->all_pieces = pos->all_white_pieces | pos->all_black_pieces;
-
-    printf("all_pieces : %lu, white_pieces : %lu\n", pos->all_pieces, pos->all_white_pieces);
 }
 
 int GetLEIndex(int rank, int file) {
