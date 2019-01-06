@@ -2,7 +2,6 @@
 #define ARK_INCLUDED
 #include "types.h"
 int GetIndex(int rank, int file); 
-struct Board InitPosition(char* FEN_str);
 U64 KingMoves(U64 king_loc, U64 all_pieces);
 U64 KnightMoves (U64 knight_loc, U64 all_pieces);
 U64 WhitePawnMoves(U64 pawn_loc, U64 all_pieces, U64 black_pieces, U64 *clear_file, U64 *mask_rank);

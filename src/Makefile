@@ -1,8 +1,11 @@
 FLAGS = -Wall -g -std=gnu99 
 TYPES = types.h
 
-main : move_gen.o ray_attacks.o FEN_Parser.o
+main : move_gen.o ray_attacks.o FEN_Parser.o types.o
 	gcc ${FLAGS} -o $@ main.c $^ 
+
+types.o : types.c
+	gcc ${FLAGS} -c $<
 
 move_gen.o : move_gen.c move_gen.h
 	gcc ${FLAGS} -c $<

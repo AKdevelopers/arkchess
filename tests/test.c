@@ -44,83 +44,83 @@ void test_generate_ray_attacks() {
 	// ROOK TESTS
 	// test 1: rook in starting position (rook with own blocker)
     char fen_1[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-	pos = InitPosition(fen_1);
+	init_position(&pos, fen_1);
 	CU_ASSERT(generate_ray_attacks(MaskRank[0], MaskFile[7], &pos, START_WHITE_ROOK_RIGHT) == 0);
 
 	// test 2: rook on empty file and rank
     char fen_2[] = "8/8/8/8/3R4/8/8/8 w KQkq - 0 1";
-	pos = InitPosition(fen_2);
+	init_position(&pos, fen_2);
 	CU_ASSERT(generate_ray_attacks(MaskRank[3], MaskFile[3], &pos, MIDDLE_PIECE) == 0x8080808f7080808);
 
 	// test 3: rook with opponent blocker on rank only, empty file
     char fen_3[] = "8/8/1n1R3r/8/8/8/8/8 w KQkq - 0 1";
-	pos = InitPosition(fen_3);
+	init_position(&pos, fen_3);
 	CU_ASSERT(generate_ray_attacks(MaskRank[5], MaskFile[3], &pos, 0x80000000000) == 0x808f60808080808);
 
 	// rook with opponent blocker on file only, empty rank
     char fen_4[] = "3k4/8/3R4/8/8/3b4/8/8 w KQkq - 0 1";
-	pos = InitPosition(fen_4);
+	init_position(&pos, fen_4);
 	CU_ASSERT(generate_ray_attacks(MaskRank[5], MaskFile[3], &pos, 0x80000000000) == 0x808f70808080000);
 	
 	// centrally placed rook with varying blockers
     char fen_5[] = "3R4/8/1p1R2N1/8/8/3b4/8/8 w KQkq - 0 1";
-	pos = InitPosition(fen_5);
+	init_position(&pos, fen_5);
 	CU_ASSERT(generate_ray_attacks(MaskRank[5], MaskFile[3], &pos, 0x80000000000) == 0x8360808080000);
 	
 	// corner placed rook with varying blockers
     char fen_6[] = "R1r1r2R/8/8/7R/8/7r/8/7r w KQkq - 0 1";
-	pos = InitPosition(fen_6);
+	init_position(&pos, fen_6);
 	CU_ASSERT(generate_ray_attacks(MaskRank[7], MaskFile[7], &pos, TOP_RIGHT) == 0x7080800000000000);
 
 	// BISHOP TESTS
     // test 7 : bishop on d4, empty board
     char fen_7[] = "8/8/8/8/3B4/8/8/8 w KQkq - 0 1";
-	pos = InitPosition(fen_7);
+	init_position(&pos, fen_7);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[7], &pos, MIDDLE_PIECE) == 0x8041221400142241);
 
     // test 8 : bishop in starting position, on starting board
     char fen_8[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-	pos = InitPosition(fen_8);
+	init_position(&pos, fen_8);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[5], DiagonalMask[12], &pos, START_WHITE_BISHOP_RIGHT) == 0);
     
     // test 9 : bishop on e3 
     char fen_9[] = "8/8/1b6/6p1/8/4B3/8/2P5 w KQkq - 0 1";
-	pos = InitPosition(fen_9);
+	init_position(&pos, fen_9);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[9], &pos, MIDDLE_PIECE_2) == 0x24428002840);
     
     // test 10 : bishop on e5 
     char fen_10[] = "8/2r3r1/8/4B3/8/2r3r1/8/8 w KQkq - 0 1";
-	pos = InitPosition(fen_10);
+	init_position(&pos, fen_10);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[8], DiagonalMask[7], &pos, 0x1000000000) == 0x44280028440000);
 
     // test 11 : bishop on e3, piece on next diagonal square
     char fen_11[] = "8/8/1b6/6p1/8/4B3/8/8 w KQkq - 0 1";
-	pos = InitPosition(fen_11);
+	init_position(&pos, fen_11);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[9], &pos, MIDDLE_PIECE_2) == 0x24428002844);
 	
     // test 12 : bishop on d4, opponent blockers on c5 and e5
     char fen_12[] = "8/8/8/2b1p3/3B4/8/8/8 w KQkq - 0 1";
-	pos = InitPosition(fen_12);
+	init_position(&pos, fen_12);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[7], &pos, MIDDLE_PIECE) == 0x1400142241);
 	
     // test 13 : bishop on d4, opponent blockers on b6 and f6
     char fen_13[] = "8/8/1b3p2/8/3B4/8/8/8 w KQkq - 0 1";
-	pos = InitPosition(fen_13);
+	init_position(&pos, fen_13);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[7], &pos, MIDDLE_PIECE) == 0x221400142241);
 	
     // test 14 : bishop on f2, opponent blockers on b6 and h4
     char fen_14[] = "8/8/1b6/8/7p/8/5B2/8  w KQkq - 0 1";
-	pos = InitPosition(fen_14);
+	init_position(&pos, fen_14);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[11], &pos, 0x2000) == 0x20488500050);
 	
     // test 15 : bishop on g1, opponent blockers on a7 and h2
     char fen_15[] = "8/b7/8/8/8/8/7p/6B1 w KQkq - 0 1";
-	pos = InitPosition(fen_15);
+	init_position(&pos, fen_15);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[6], DiagonalMask[13], &pos, 0x40) == 0x102040810a000);
 	
     // test 16 : bishop on b1, opponent blockers on a2 and h7
     char fen_16[] = "8/7b/8/8/8/8/b7/1B6 w KQkq - 0 1";
-	pos = InitPosition(fen_16);
+	init_position(&pos, fen_16);
 	CU_ASSERT(generate_ray_attacks(AntiDiagonalMask[1], DiagonalMask[8], &pos, 0x2) == 0x80402010080500);
 }
 
@@ -155,7 +155,7 @@ void test_get_knight_moves() {
 	U16 *move_list = NULL;
 
     char fen_str_1[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    pos = InitPosition(fen_str_1);
+    init_position(&pos, fen_str_1);
     move_list = get_knight_moves(&pos);
     U16 expected_1[4] = {0x50, 0x52, 0x195, 0x197};
     for (int i = 0; i < vector_size(move_list); i++) {
@@ -165,7 +165,7 @@ void test_get_knight_moves() {
 
 	// empty board, single knight in the middle of the board
     char fen_str_2[] = "8/8/8/8/3N4/8/8/8 w KQkq - 0 1";
-	pos = InitPosition(fen_str_2);
+	init_position(&pos, fen_str_2);
 	move_list = get_knight_moves(&pos);
     U16 expected_2[8] = {0x6ca, 0x6cc, 0x6d1, 0x6d5, 0x6e1, 0x6e5, 0x6ea, 0x6ec};
     for (int i = 0; i < vector_size(move_list); i++) {
@@ -209,6 +209,7 @@ int main() {
     CU_add_test(suite, "test_king_bitboard", test_king_bb);
     CU_add_test(suite, "test_fill_move_list", test_fill_move_list);
     CU_add_test(suite, "test_generate_ray_attacks", test_generate_ray_attacks);
+    CU_add_test(suite, "test_fen_parser", test_fen_parser);
 	CU_basic_run_tests();
     //CU_curses_run_tests();
 

@@ -26,15 +26,6 @@ int get_special_move(U16 move) {
     return (SPECIAL_MOVE_MASK & move) >> 14;
 }
 
-
-// initializes the position by parsing the given FEN string and returning bitboards
-struct Board InitPosition(char* FEN_str) {
-	struct Board state;
-	state = ParseFEN(FEN_str);	
-
-	return state;
-}
-
 int GetIndex(int rank, int file) {
 	// A,B,..,H = 0,1,..7 for files e.g. A1 is {0,0}
 	int squareIndex = 8 * rank + file;
