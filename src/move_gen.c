@@ -2,6 +2,7 @@
 #include "ray_attacks.h"
 #include "move_gen.h"
 #include "types.h"
+#include "bits.h"
 #include "FEN_Parser.h" 
 #include "vector.h"
 
@@ -26,28 +27,6 @@ int get_special_move(U16 move) {
     return (SPECIAL_MOVE_MASK & move) >> 14;
 }
 
-int GetIndex(int rank, int file) {
-	// A,B,..,H = 0,1,..7 for files e.g. A1 is {0,0}
-	int squareIndex = 8 * rank + file;
-
-	return squareIndex;
-}
-
-int GetSetBit(U64 bitboard) {
-	// function that returns index of least significant set bit
-	// the builtin function returns set bit + 1, so subtracting 1 reverses that
-	int index = __builtin_ffsll(bitboard) - 1;
-
-	return index;
-}
-
-int GetRank(int index) {
-	return index / 8;
-}
-
-int GetFile(int index) {
-	return index % 8;
-}
 
 /* Takes current king location bitboard, own pieces bitboard and returns moves */
 U64 KingMoves(U64 king_loc, U64 own_pieces) {
@@ -110,30 +89,6 @@ U16 process_move(int dest, int src, int promo_piece, int special) {
     return move;
 }
 
-void split_bits_index(U64 bb, int num_set, int *index_arr) {
-	int index = 0;
-	int bit = 0;
-	
-	while (bit < 64 && index < num_set) {
-		if (bb & 1) {
-			index_arr[index] = bit;
-			index++;
-		}
-		bb >>= 1;
-		bit++;
-	}
-}
-
-int count_set_bits(U64 bb) {
-	int num_set = 0;
-	for (int i = 0; i < 64; i++) {
-		if (bb & 1) {
-			num_set++;
-		}
-		bb >>= 1;
-	}
-	return num_set;
-}
 
 U64 KnightMoves(U64 knight_loc, U64 own_pieces) {
 	U64 a_file_clip, h_file_clip, ab_file_clip, gh_file_clip;
@@ -237,16 +192,6 @@ U64 BlackPawnMoves(U64 pawn_loc, U64 all_pieces, U64 white_pieces, U64 *clear_fi
 	return valid_moves;
 }
 
-void FilterPieces(U64 piece_BB, int index_array[]) {
-	int counter = 0;
-
-	while (piece_BB != 0) {
-		index_array[counter] = GetSetBit(piece_BB);
-		piece_BB &= ~(1 << index_array[counter]);
-		counter++;
-	}
-}
-
 U16 *get_rook_moves(struct Board *pos) {
     int index, file, rank;
     U64 move_bb, piece_bb;
@@ -259,8 +204,8 @@ U16 *get_rook_moves(struct Board *pos) {
     U16 *move_list = NULL;
     for (int i = 0; i < num_rooks; i++) {
         index = rook_index_list[i];
-        file = GetFile(index);
-        rank = GetRank(index);
+        file = get_file(index);
+        rank = get_rank(index);
         piece_bb = 1 << index;
         move_bb = generate_ray_attacks(MaskRank[rank], MaskFile[file], pos, piece_bb);
         fill_move_list(move_list, move_bb, index);
@@ -306,8 +251,8 @@ U16 *get_bishop_moves(struct Board *pos) {
     U16 *move_list = NULL;
     for (int i = 0; i < num_pieces; i++) {
         index = piece_index_list[i];
-        file = GetFile(index);
-        rank = GetRank(index);
+        file = get_file(index);
+        rank = get_rank(index);
         diagonal = get_diagonal( file, rank);
         antidiagonal = get_anti_diagonal(file, rank);
         piece_bb = 1 << index;
@@ -329,8 +274,8 @@ U16 *get_queen_moves(struct Board *pos) {
     U16 *move_list = NULL;
     for (int i = 0; i < num_pieces; i++) {
         index = piece_index_list[i];
-        file = GetFile(index);
-        rank = GetRank(index);
+        file = get_file(index);
+        rank = get_rank(index);
         diagonal = get_diagonal( file, rank);
         antidiagonal = get_anti_diagonal(file, rank);
         piece_bb = 1 << index;
@@ -340,36 +285,6 @@ U16 *get_queen_moves(struct Board *pos) {
     }
     return move_list;
 }
-
-/*
-U64 DiagonalAttacks(U64 piece_BB, U64 own_pieces, U64 all_pieces, U64 *mask_antidiagonal, U64 *mask_diagonal) {
-	U64 valid_moves;
-
-	int diagonal, antidiagonal, index, file, rank;
-
-	index = GetSetBit(piece_BB);
-	file = GetFile(index);
-	rank = GetRank(index);
-
-	diagonal = get_diagonal(piece_BB, file, rank);
-	antidiagonal = get_anti_diagonal(piece_BB, file, rank);
-	valid_moves = generate_ray_attacks(mask_antidiagonal[antidiagonal], mask_diagonal[diagonal], all_pieces, piece_BB) &
-					(~own_pieces);
-
-	return valid_moves;
-}
-
-
-U64 QueenMoves(U64 queen_loc, U64 own_pieces, U64 all_pieces, U64 *mask_file, U64 *mask_rank, U64 *mask_antidiagonal, U64 *mask_diagonal) {
-	U64 valid_moves, straight_attacks = 0, diagonal_attacks;
-
-	//straight_attacks = StraightAttacks(queen_loc, own_pieces, all_pieces, mask_file, mask_rank);
-	diagonal_attacks = DiagonalAttacks(queen_loc, own_pieces, all_pieces, mask_antidiagonal, mask_diagonal);
-	valid_moves = straight_attacks | diagonal_attacks;
-
-	return valid_moves;
-}	
-*/
 
 
 

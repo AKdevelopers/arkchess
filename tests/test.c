@@ -11,15 +11,18 @@
 #include "../src/ray_attacks.h"
 #include "../src/types.h"
 #include "../src/vector.h"
+#include "../src/bits.h"
 
 // testing constants
 U64 START_POS = 0xffff00000000ffff;
 U64 START_BLACK = 0xffff000000000000; 
 U64 START_WHITE = 0x000000000000ffff;
 U64 START_WHITE_KNIGHT = 0x42; 
+U64 START_BLACK_KNIGHT = 0x4200000000000000;
 U64 START_WHITE_ROOK_RIGHT = 0x80;
 U64 START_WHITE_ROOK_LEFT = 0x1;
 U64 START_WHITE_ROOK = 0x81;
+U64 START_BLACK_ROOK = 0x8100000000000000;
 U64 START_WHITE_BISHOP_RIGHT = 0x20;
 U64 START_WHITE_KING = 0x10;
 U64 MIDDLE_PIECE = 0x8000000; // d4
@@ -27,6 +30,50 @@ U64 MIDDLE_PIECE_2 = 0x100000; // e3
 U64 BOTTOM_RIGHT = 0x80;
 U64 TOP_RIGHT = 0x8000000000000000;
 U64 BOTTOM_LEFT = 0x1;
+
+void test_fen_parser() {
+	struct Board pos;
+	// test 1 : starting board
+	char fen_1[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+	init_position(&pos, fen_1);
+    CU_ASSERT(pos.white_rooks == START_WHITE_ROOK);
+    CU_ASSERT(pos.black_rooks == START_BLACK_ROOK);
+    CU_ASSERT(pos.white_knights == START_WHITE_KNIGHT);
+    CU_ASSERT(pos.black_knights == START_BLACK_KNIGHT);
+
+    CU_ASSERT(pos.colour_to_move == 0);
+    CU_ASSERT(pos.castling_rights == 15);
+    CU_ASSERT(pos.ep_square == -1);
+    CU_ASSERT(pos.half_move_ctr == 0);
+    CU_ASSERT(pos.full_move_ctr == 1);
+
+	// test 2 : empty board	
+	char fen_2[] = "8/8/8/8/8/8/8/8 w KQkq - 0 1";
+	init_position(&pos, fen_2);
+
+	CU_ASSERT(pos.all_pieces == 0);
+
+    CU_ASSERT(pos.colour_to_move == 0);
+    CU_ASSERT(pos.castling_rights == 15);
+    CU_ASSERT(pos.ep_square == -1);
+    CU_ASSERT(pos.half_move_ctr == 0);
+    CU_ASSERT(pos.full_move_ctr == 1);
+
+    // test 3 : different configurations
+	char fen_3[] = "8/8/8/8/8/8/8/8 b K--q d4 5 22";
+	init_position(&pos, fen_3);
+
+	CU_ASSERT(pos.all_pieces == 0);
+
+    CU_ASSERT(pos.colour_to_move == 1);
+    CU_ASSERT(pos.castling_rights == 9);
+    CU_ASSERT(pos.ep_square == 27);
+    CU_ASSERT(pos.half_move_ctr == 5);
+    CU_ASSERT(pos.full_move_ctr == 22);
+
+	// test 3 : complex position
+
+}
 
 void test_fill_move_list() {
 	U16 *move_list = NULL;
@@ -209,7 +256,7 @@ int main() {
     CU_add_test(suite, "test_king_bitboard", test_king_bb);
     CU_add_test(suite, "test_fill_move_list", test_fill_move_list);
     CU_add_test(suite, "test_generate_ray_attacks", test_generate_ray_attacks);
-    //CU_add_test(suite, "test_fen_parser", test_fen_parser);
+    CU_add_test(suite, "test_fen_parser", test_fen_parser);
 	CU_basic_run_tests();
     //CU_curses_run_tests();
 

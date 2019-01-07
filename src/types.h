@@ -29,7 +29,7 @@ struct Board {
     U64 all_pieces;
 
     int colour_to_move;
-	char castling_rights; // 15 for KQkq, 0 for ---- 
+	int castling_rights; // 15 for KQkq, 0 for ---- 
 	int ep_square; // 0..63
 	int half_move_ctr;
 	int full_move_ctr;
@@ -42,9 +42,9 @@ extern U64 MaskRank[8];
 extern U64 DiagonalMask[15];
 extern U64 AntiDiagonalMask[15];
 
-extern const char KINGSIDE_WHITE;
-extern const char QUEENSIDE_WHITE;
-extern const char KINGSIDE_BLACK;
-extern const char QUEENSIDE_BLACK;
+extern const int KINGSIDE_WHITE;
+extern const int QUEENSIDE_WHITE;
+extern const int KINGSIDE_BLACK;
+extern const int QUEENSIDE_BLACK;
 #endif 
 

@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "FEN_Parser.h"
 #include "types.h"
+#include "bits.h"
 
 void *Malloc(int size) {
     void *result = malloc(size);
@@ -26,17 +27,18 @@ void init_position(struct Board *pos, char *fen_str) {
     memset(pos, 0, sizeof(struct Board));
     char* piece_placement = strtok(fen_str, " "); 
 	char* active_color = strtok(NULL, " "); 
-    char* castling_rights = strtok(NULL, " "); char* ep_square = strtok(NULL, " "); char* half_move_counter = strtok(NULL, " "); 
+    char* castling_rights = strtok(NULL, " "); 
+    char* ep_square = strtok(NULL, " "); 
+    char* half_move_counter = strtok(NULL, " "); 
     char* full_move_counter = strtok(NULL, " ");
 
 	pos->colour_to_move = (strcmp(active_color, "w")) ? 1 : 0;
 	pos->castling_rights = parse_castling_rights(castling_rights);
-	pos->ep_square = (strcmp(ep_square, "-")) ? strtol(ep_square, NULL, 10) : -1;
+	pos->ep_square = (strcmp(ep_square, "-")) ? square_to_index(ep_square) : -1;
 	pos->half_move_ctr = strtol(half_move_counter, NULL, 10);
 	pos->full_move_ctr = strtol(full_move_counter, NULL, 10); 
 
     char *rank_arr[8];
-    //char board_arr[8][8];
 
 	char **board_arr = Malloc(sizeof(char *) * 8);
 	for (int i = 0; i < 8; i++) {
@@ -49,19 +51,33 @@ void init_position(struct Board *pos, char *fen_str) {
 	free_board(board_arr);
 }
 
-char parse_castling_rights(char *castling_rights) {
-    char cmap = 0;
+int square_to_index(char *square) {
+    int file, rank;
+    char files[8] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    for (int i = 0; i < 8; i++) {
+        if (square[0] == files[i]) {
+            file = i;
+        }
+    }
+    
+    rank = square[1] - '0' - 1;
+    return get_index(rank, file);
+}
+
+int parse_castling_rights(char *castling_rights) {
+    int cmap = 0;
     if (castling_rights[0] == 'K') {
         cmap |= KINGSIDE_WHITE;
     }
 
-    if (castling_rights[1] == 'k') {
+    if (castling_rights[1] == 'Q') {
+        cmap |= QUEENSIDE_WHITE;
+    }
+
+    if (castling_rights[2] == 'k') {
         cmap |= KINGSIDE_BLACK;
     }
 
-    if (castling_rights[2] == 'Q') {
-        cmap |= QUEENSIDE_WHITE;
-    }
 
     if (castling_rights[3] == 'q') {
         cmap |= QUEENSIDE_BLACK;
